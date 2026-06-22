@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Matters — Halo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="matters.css" />
+</head>
+<body>
+  <div class="app">
+    <!-- Top navigation bar (full width, dark) -->
+    <header class="top-nav">
+      <div class="top-nav__logo">
+        <span class="logo-text">halo<sup class="logo-tm">TM</sup></span>
+        <span class="logo-sub">a setfords product</span>
+      </div>
+      <div class="top-nav__actions">
+        <button class="top-nav__action" type="button" aria-label="Search">
+          <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+          <span>Search</span>
+        </button>
+        <button class="top-nav__action" type="button" aria-label="Help">
+          <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          <span>Help</span>
+        </button>
+        <button class="top-nav__action" type="button" aria-label="Notifications">
+          <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+          <span>Notifications</span>
+        </button>
+        <button class="top-nav__action" type="button" aria-label="Account">
+          <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>
+          <span>Harry Poole</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Left sidebar -->
+    <aside class="sidebar">
+      <button class="sidebar__collapse" type="button" aria-label="Collapse sidebar">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+      </button>
+      <nav class="sidebar__menu">
+        <a class="menu-item" href="#">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+          <span>Dashboard</span>
+        </a>
+        <a class="menu-item menu-item--active" href="#">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7h-3V5a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2v2H4a1 1 0 0 0-1 1v11a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V8a1 1 0 0 0-1-1Z"/><path d="M9 7V5h6v2"/></svg>
+          <span>Matters</span>
+        </a>
+        <a class="menu-item" href="#">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v4H4z"/><path d="M4 12h16v8H4z"/><path d="M8 16h4"/></svg>
+          <span>Clients</span>
+        </a>
+        <a class="menu-item menu-item--has-arrow" href="#">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18"/></svg>
+          <span>Accounting</span>
+          <svg class="menu-item__arrow" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+        </a>
+        <a class="menu-item menu-item--has-arrow" href="#">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21V8l9-5 9 5v13"/><path d="M9 21V12h6v9"/></svg>
+          <span>Head Office</span>
+          <svg class="menu-item__arrow" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+        </a>
+        <a class="menu-item menu-item--has-arrow" href="#">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h12l4 4v12H4z"/><path d="M14 4v6h6"/></svg>
+          <span>Reports</span>
+          <svg class="menu-item__arrow" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+        </a>
+        <a class="menu-item menu-item--has-arrow" href="#">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1A1.7 1.7 0 0 0 4.6 9a1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1A1.7 1.7 0 0 0 9 4.6 1.7 1.7 0 0 0 10 3.1V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1A1.7 1.7 0 0 0 19.4 9c.1.6.5 1.1 1.1 1.4h.1a2 2 0 1 1 0 4H20.5a1.7 1.7 0 0 0-1.1 1Z"/></svg>
+          <span>Settings</span>
+          <svg class="menu-item__arrow" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+        </a>
+      </nav>
+    </aside>
+
+    <!-- Sticky Clients panel (rendered by clients-panel.js) -->
+    <aside class="clients-pane" id="clients-pane" aria-label="Clients"></aside>
+
+    <!-- Main content -->
+    <main class="content">
+      <!-- Open matter tabs (rendered by matter-tabs.js) -->
+      <div class="matter-tabs" id="matter-tabs" role="tablist" aria-label="Open matters" hidden></div>
+
+      <div class="content__header">
+        <h1 class="content__title">Matters</h1>
+        <div class="content__header-actions">
+          <button class="btn btn--primary" type="button">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Export To
+          </button>
+          <button class="btn btn--primary" type="button">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Add
+          </button>
+        </div>
+      </div>
+
+      <!-- Grid toolbar — search / filter / columns + status segmented filter -->
+      <div class="filter-row">
+        <div class="toolbar-left">
+          <form class="search" id="matter-search-form" role="search">
+            <svg class="search__icon" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+            <input id="matter-search" type="text" placeholder="Search" class="search__input" aria-label="Search matters" />
+          </form>
+          <button class="icon-btn icon-btn--brand" type="button" aria-label="Filter">
+            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+          </button>
+          <button class="icon-btn" type="button" aria-label="Columns">
+            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/></svg>
+          </button>
+        </div>
+
+        <div class="segmented" role="tablist" aria-label="Filter matters by status">
+          <button class="seg-btn" role="tab" data-tab="All" aria-selected="false">All</button>
+          <button class="seg-btn seg-btn--active" role="tab" data-tab="Open" aria-selected="true">Open</button>
+          <button class="seg-btn" role="tab" data-tab="Favourite" aria-selected="false">Favourite</button>
+          <button class="seg-btn" role="tab" data-tab="Recent" aria-selected="false">Recent</button>
+          <button class="seg-btn" role="tab" data-tab="Closing" aria-selected="false">Closing</button>
+          <button class="seg-btn" role="tab" data-tab="Closed" aria-selected="false">Closed</button>
+          <button class="seg-btn" role="tab" data-tab="Reopening" aria-selected="false">Reopening</button>
+        </div>
+      </div>
+
+      <!-- Matters table -->
+      <div class="table-wrapper">
+        <table class="matters-table">
+          <thead>
+            <tr>
+              <th class="col-fav" aria-label="Favourite"></th>
+              <th class="col-desc">Description</th>
+              <th class="col-reference">Reference</th>
+              <th class="col-client">Client Name</th>
+              <th class="col-status">Status</th>
+              <th class="col-type">Type</th>
+              <th class="col-earner">Fee Earner</th>
+              <th class="col-office">Office B...</th>
+              <th class="col-action">Action</th>
+            </tr>
+          </thead>
+          <tbody id="matters-tbody">
+            <!-- Rows are rendered by JS -->
+          </tbody>
+        </table>
+        <div class="table-empty" id="table-empty" hidden>No matters match your search.</div>
+      </div>
+
+      <!-- Pagination -->
+      <div class="pagination">
+        <div class="pagination__numbers">
+          <button class="pg-btn pg-btn--arrow" aria-label="First page">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 17l-5-5 5-5"/><path d="M18 17l-5-5 5-5"/></svg>
+          </button>
+          <button class="pg-btn pg-btn--arrow" aria-label="Previous page">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+          </button>
+          <button class="pg-btn pg-btn--active">1</button>
+          <button class="pg-btn">2</button>
+          <button class="pg-btn">3</button>
+          <button class="pg-btn">4</button>
+          <button class="pg-btn">5</button>
+          <button class="pg-btn">6</button>
+          <button class="pg-btn">7</button>
+          <button class="pg-btn">8</button>
+          <button class="pg-btn">9</button>
+          <button class="pg-btn">10</button>
+          <span class="pg-ellipsis">…</span>
+          <button class="pg-btn pg-btn--arrow" aria-label="Next page">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+          </button>
+        </div>
+        <div class="pagination__dropdown">
+          <span>Items per page</span>
+          <div class="select">
+            <select aria-label="Items per page">
+              <option>25</option>
+              <option>50</option>
+              <option>100</option>
+            </select>
+          </div>
+        </div>
+        <div class="pagination__count" id="pagination-count">1 of 4553 pages (113803 items)</div>
+      </div>
+    </main>
+  </div>
+
+  <div class="loading-overlay" id="table-loading" hidden aria-live="polite" aria-busy="true">
+    <span class="spinner" aria-hidden="true"></span>
+    <span class="loading-overlay__label">Searching…</span>
+  </div>
+
+  <script src="matters-data.js"></script>
+  <script src="clients-data.js"></script>
+  <script src="matter-tabs.js"></script>
+  <script src="matters.js"></script>
+  <script src="clients-panel.js"></script>
+  <script src="sidebar.js"></script>
+</body>
+</html>
