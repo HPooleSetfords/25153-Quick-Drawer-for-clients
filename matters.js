@@ -13,7 +13,13 @@ const loadingEl = document.getElementById('table-loading');
 const countEl = document.getElementById('pagination-count');
 const searchForm = document.getElementById('matter-search-form');
 const searchInput = document.getElementById('matter-search');
+const searchClearBtn = document.getElementById('matter-search-clear');
 const tabButtons = document.querySelectorAll('.seg-btn');
+
+// Show the clear ('x') affordance only when there's a query to clear.
+function syncSearchClear() {
+  if (searchClearBtn) searchClearBtn.hidden = !searchInput.value;
+}
 
 // ---------- Icons ----------
 const heartOutline = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>';
@@ -109,6 +115,7 @@ function runSearch(value) {
     searchTerm = value;
     loadingEl.hidden = true;
     renderRows();
+    syncSearchClear();
     searchLoadingTimer = null;
   }, 1000);
 }
@@ -117,6 +124,20 @@ searchForm.addEventListener('submit', (e) => {
   e.preventDefault();
   runSearch(searchInput.value);
 });
+
+// Keep the clear button in sync as the user types.
+searchInput.addEventListener('input', syncSearchClear);
+
+// Clear the query — removes the client-name filter applied from the panel.
+if (searchClearBtn) {
+  searchClearBtn.addEventListener('click', () => {
+    searchInput.value = '';
+    searchTerm = '';
+    syncSearchClear();
+    renderRows();
+    searchInput.focus();
+  });
+}
 
 // Toggle favourite from the table — handled before row navigation
 tbody.addEventListener('click', (e) => {
@@ -227,9 +248,11 @@ window.HaloMatters = {
       b.classList.toggle('seg-btn--active', on);
       b.setAttribute('aria-selected', on ? 'true' : 'false');
     });
-    searchTerm = name;
     if (searchInput) searchInput.value = name;
-    renderRows();
+    syncSearchClear();
+    // Switching clients triggers a fresh search — show the spinner before
+    // the results appear, mirroring a typed search.
+    runSearch(name);
   },
 };
 
@@ -246,4 +269,5 @@ window.HaloMatters = {
 })();
 
 // ---------- Init ----------
+syncSearchClear();
 renderRows();

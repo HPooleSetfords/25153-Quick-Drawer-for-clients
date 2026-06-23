@@ -30,7 +30,7 @@
   --radius-xl: 12px;
 
   --sidebar-w: 250px;
-  --clients-w: 279px;
+  --clients-w: 292px;
   --topnav-h: 80px;
 
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -331,7 +331,9 @@ button {
   justify-content: space-between;
   flex-wrap: wrap;
   gap: 12px;
-  padding: 16px 32px;
+  /* Reduced top padding so the matters search aligns horizontally with the
+     clients-panel search field (which sits ~11px higher). */
+  padding: 6px 32px 16px 32px;
 }
 
 .toolbar-left {
@@ -408,7 +410,7 @@ button {
   height: 45px;
   border: 1px solid #62748e;
   border-radius: var(--radius-lg);
-  padding: 0 16px 0 52px;
+  padding: 0 44px 0 52px;
   font-family: inherit;
   font-size: 16px;
   font-weight: 500;
@@ -417,6 +419,34 @@ button {
   background: var(--surface-primary);
   outline: none;
   transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.search__clear {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  color: var(--text-secondary);
+  background: transparent;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.search__clear:hover {
+  background: var(--slate-200, rgba(98, 116, 142, 0.15));
+  color: var(--brand);
+}
+
+.search__clear[hidden] {
+  display: none;
 }
 
 .search__input::placeholder {
@@ -448,15 +478,22 @@ button {
 /* ---------- Table ---------- */
 .table-wrapper {
   flex: 1;
+  min-height: 0;
   margin: 0 32px;
   border: 1px solid var(--border-secondary);
   border-radius: var(--radius-xl);
-  overflow: hidden;
+  /* Scroll the table (both axes) when the columns can't fit the available
+     width — e.g. once the clients panel narrows the content area — instead
+     of squashing the fixed column widths. */
+  overflow: auto;
   background: var(--surface-primary);
 }
 
 .matters-table {
   width: 100%;
+  /* Sum of the fixed column widths below; keeps columns at their intended
+     size and lets .table-wrapper scroll horizontally when space is tight. */
+  min-width: 1110px;
   border-collapse: collapse;
   font-size: 14px;
   table-layout: fixed;
@@ -526,7 +563,7 @@ button {
 }
 
 .matters-table tbody td {
-  padding: 14px 16px;
+  padding: 9px 16px;
   color: var(--text-secondary);
   font-weight: 500;
   vertical-align: middle;
@@ -2339,6 +2376,45 @@ textarea.field__control {
   -webkit-appearance: none;
 }
 
+.clients-search__clear {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  margin-left: 4px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  color: var(--text-secondary);
+  background: transparent;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.clients-search__clear:hover {
+  background: var(--slate-200, rgba(98, 116, 142, 0.15));
+  color: var(--brand);
+}
+
+.clients-search__clear[hidden] {
+  display: none;
+}
+
+/* Loading state shown in the client list while a search runs — reuses the
+   matters .spinner so the style matches. */
+.clients-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 48px 16px;
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
 /* ---- Segmented filter ---- */
 .clients-seg {
   display: flex;
@@ -2356,6 +2432,7 @@ textarea.field__control {
   font-weight: 600;
   line-height: 20px;
   color: var(--text-primary);
+  white-space: nowrap;
   transition: background 0.15s, color 0.15s;
 }
 
@@ -2386,6 +2463,9 @@ textarea.field__control {
   flex: 1;
   min-height: 0;
   overflow-y: auto;
+  /* Stop the browser from shifting scrollTop when an accordion expands —
+     otherwise scroll anchoring pushes the opened matters out of view. */
+  overflow-anchor: none;
   padding: 0 12px 32px;
 }
 
@@ -2394,12 +2474,13 @@ textarea.field__control {
   align-items: center;
   gap: 12px;
   width: 100%;
-  height: 48px;
-  padding: 8px 12px;
+  min-height: 48px;
+  padding: 6px 12px;
   border: none;
   border-radius: var(--radius-md);
   background: transparent;
   text-align: left;
+  cursor: pointer;
   transition: background 0.12s;
 }
 
@@ -2407,8 +2488,14 @@ textarea.field__control {
   background: var(--slate-100);
 }
 
-.client-item__name {
+.client-item__text {
   flex: 1 0 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.client-item__name {
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -2416,6 +2503,17 @@ textarea.field__control {
   font-size: 14px;
   font-weight: 600;
   line-height: 20px;
+  color: var(--text-secondary);
+}
+
+.client-item__meta {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 16px;
   color: var(--text-secondary);
 }
 
@@ -2428,10 +2526,6 @@ textarea.field__control {
 }
 
 .client-item__icon--hover {
-  display: none;
-}
-
-.client-item:hover .client-item__icon--default {
   display: none;
 }
 
@@ -2450,6 +2544,158 @@ textarea.field__control {
 
 .client-item--selected:hover {
   background: #cdeeff;
+}
+
+/* ---- Multi-matter accordion ---- */
+/* The chevron is always visible (an expand affordance) and flips when open. */
+.client-item__chevron {
+  display: flex;
+  transition: transform 0.15s ease;
+}
+
+.client-group--open .client-item__chevron {
+  transform: rotate(180deg);
+}
+
+.client-item--group[aria-expanded="true"] {
+  background: var(--slate-100);
+}
+
+.client-matters[hidden] {
+  display: none;
+}
+
+/* Expanded matters sit on a tinted panel, indented from the client name. */
+.client-matters {
+  display: flex;
+  flex-direction: column;
+  background: var(--slate-100);
+  padding-left: 12px;
+}
+
+.client-matter {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 48px;
+  padding: 8px 12px;
+  border: none;
+  border-radius: var(--radius-md);
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.12s;
+}
+
+/* Divider between matter rows, matching the Figma list. */
+.client-matter + .client-matter {
+  box-shadow: 0 -1px 0 0 var(--slate-200);
+}
+
+.client-matter:hover {
+  background: rgba(0, 117, 149, 0.06);
+}
+
+.client-matter__body {
+  flex: 1 0 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.client-matter__top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.client-matter__ref {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 20px;
+  color: var(--text-secondary);
+}
+
+/* Status badge — outlined chip with a coloured dot (Figma 3159:182660). */
+.client-matter__status {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 6px;
+  border: 1px solid var(--gray-300, #d1d5dc);
+  border-radius: var(--radius-md);
+  background: var(--surface-primary);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 16px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.client-matter__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--surface-positive, #00a63e); /* Open */
+}
+
+.client-matter__status[data-status="Closed"] .client-matter__dot {
+  background: #fb2c36;
+}
+
+.client-matter__status[data-status="Closing"] .client-matter__dot {
+  background: #ea580c;
+}
+
+.client-matter__status[data-status="Reopening"] .client-matter__dot {
+  background: var(--accent, #0075a8);
+}
+
+.client-matter__desc {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 16px;
+  color: var(--text-secondary);
+}
+
+.client-matter__icon {
+  display: flex;
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  color: var(--brand);
+}
+
+/* "View all matters" action at the foot of an expanded accordion. */
+.client-matters__all {
+  width: 100%;
+  padding: 10px 12px;
+  border: none;
+  border-radius: var(--radius-md);
+  background: transparent;
+  box-shadow: 0 -1px 0 0 var(--slate-200);
+  text-align: left;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 18px;
+  color: var(--brand);
+  cursor: pointer;
+  transition: background 0.12s;
+}
+
+.client-matters__all:hover {
+  background: rgba(0, 117, 149, 0.06);
 }
 
 .clients-pane__empty {
