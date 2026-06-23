@@ -129,11 +129,21 @@
         </div>
       </div>
 
+      <!-- Selection banner (shown when matters are checked) -->
+      <div class="select-banner" id="select-banner" hidden>
+        <button class="select-banner__close" type="button" id="select-clear" aria-label="Clear selection">
+          <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+        <span class="select-banner__count" id="select-count">0 selected</span>
+        <button class="select-banner__action" type="button" id="select-view-all">View all matters</button>
+      </div>
+
       <!-- Matters table -->
       <div class="table-wrapper">
         <table class="matters-table">
           <thead>
             <tr>
+              <th class="col-check"><input type="checkbox" class="row-check" id="check-all" aria-label="Select all matters" /></th>
               <th class="col-fav" aria-label="Favourite"></th>
               <th class="col-desc">Description</th>
               <th class="col-reference">Reference</th>

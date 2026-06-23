@@ -235,7 +235,8 @@ button {
 }
 
 .content__title {
-  font-size: 24px;
+  font-size: 20px;
+  line-height: 28px;
   font-weight: 600;
   margin: 0;
   color: var(--text-primary);
@@ -283,6 +284,70 @@ button {
 }
 
 /* ---------- Tabs ---------- */
+/* ---------- Selection banner + row checkboxes ---------- */
+/* Figma: 3171-195935 */
+.select-banner {
+  display: flex;
+  align-items: center;
+  gap: 21px;
+  margin: 0 32px 12px;
+  border: 1px solid var(--border-secondary);
+  border-radius: var(--radius-lg);
+}
+
+.select-banner[hidden] {
+  display: none;
+}
+
+.select-banner__close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+  border: none;
+  background: transparent;
+  color: var(--brand);
+  cursor: pointer;
+}
+
+.select-banner__count {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 20px;
+  color: #000;
+}
+
+.select-banner__action {
+  border: none;
+  background: transparent;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+  color: var(--brand);
+  cursor: pointer;
+}
+
+/* Checkbox column: override the table's default ellipsis/overflow and wide
+   padding, which would otherwise clip the checkbox and render a stray "…". */
+.matters-table thead th.col-check,
+.matters-table tbody td.col-check {
+  width: 48px;
+  padding-left: 0;
+  padding-right: 0;
+  text-align: center;
+  overflow: visible;
+  text-overflow: clip;
+}
+
+.row-check {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--brand);
+  cursor: pointer;
+  vertical-align: middle;
+}
+
 /* ---------- Tabs (matter detail page content tabs) ---------- */
 .tabs {
   display: flex;
@@ -481,7 +546,7 @@ button {
   min-height: 0;
   margin: 0 32px;
   border: 1px solid var(--border-secondary);
-  border-radius: var(--radius-xl);
+  border-radius: var(--radius-lg);
   /* Scroll the table (both axes) when the columns can't fit the available
      width — e.g. once the clients panel narrows the content area — instead
      of squashing the fixed column widths. */

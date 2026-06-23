@@ -15,6 +15,14 @@ const searchForm = document.getElementById('matter-search-form');
 const searchInput = document.getElementById('matter-search');
 const searchClearBtn = document.getElementById('matter-search-clear');
 const tabButtons = document.querySelectorAll('.seg-btn');
+const selectBanner = document.getElementById('select-banner');
+const selectCountEl = document.getElementById('select-count');
+const selectClearBtn = document.getElementById('select-clear');
+const selectViewAllBtn = document.getElementById('select-view-all');
+const checkAll = document.getElementById('check-all');
+
+// ---------- Multi-select state ----------
+const selectedRefs = new Set();
 
 // Show the clear ('x') affordance only when there's a query to clear.
 function syncSearchClear() {
@@ -56,6 +64,9 @@ function renderRows() {
   tbody.innerHTML = visible.map((m, idx) => {
     return `
     <tr data-idx="${matters.indexOf(m)}" data-ref="${escapeAttr(m.reference)}" data-title="${escapeAttr(m.description)}" class="row-link">
+      <td class="col-check">
+        <input type="checkbox" class="row-check" data-check aria-label="Select ${escapeAttr(m.reference)}" ${selectedRefs.has(m.reference) ? 'checked' : ''} />
+      </td>
       <td class="col-fav">
         <button class="fav-btn" type="button" aria-label="${m.favourite ? 'Remove from favourites' : 'Add to favourites'}" data-fav>
           ${m.favourite ? heartFilled : heartOutline}
@@ -78,6 +89,7 @@ function renderRows() {
   emptyEl.hidden = visible.length !== 0;
   // Static label per design; the filtered count would only be informational.
   countEl.textContent = '1 of 4553 pages (113803 items)';
+  updateSelectionUI();
 }
 
 // ---------- Helpers ----------
@@ -152,6 +164,9 @@ tbody.addEventListener('click', (e) => {
     return;
   }
 
+  // Checkbox cell handles selection via its change event — never navigate.
+  if (e.target.closest('.col-check')) return;
+
   // Kebab/action button opens the same menu as a right-click, anchored to it.
   const actionBtn = e.target.closest('.action-btn');
   if (actionBtn) {
@@ -179,10 +194,10 @@ rowMenu.setAttribute('role', 'menu');
 rowMenu.hidden = true;
 rowMenu.innerHTML =
   '<button class="matter-menu__item" type="button" role="menuitem" data-menu-action="tab">' +
-    '<span>Open in new tab</span>' +
+    '<span>View in new tab</span>' +
   '</button>' +
   '<button class="matter-menu__item" type="button" role="menuitem" data-menu-action="window">' +
-    '<span>Open in new window</span>' + iconCallMade +
+    '<span>View in new window</span>' + iconCallMade +
   '</button>';
 document.body.appendChild(rowMenu);
 
@@ -267,6 +282,79 @@ window.HaloMatters = {
     }
   }
 })();
+
+// ---------- Multi-select ----------
+// Per-row checkboxes feed a selection banner; "View all matters" opens every
+// selected matter as a tab and navigates to the first.
+function updateSelectionUI() {
+  const count = selectedRefs.size;
+  if (selectBanner) selectBanner.hidden = count === 0;
+  if (selectCountEl) selectCountEl.textContent = count + ' selected';
+
+  // Sync the header "select all" checkbox against the visible rows.
+  if (checkAll) {
+    const checks = tbody.querySelectorAll('.row-check');
+    const checkedCount = [...checks].filter((c) => c.checked).length;
+    checkAll.checked = checks.length > 0 && checkedCount === checks.length;
+    checkAll.indeterminate = checkedCount > 0 && checkedCount < checks.length;
+  }
+}
+
+// Selected refs in table (data) order, so "the first" is the topmost row.
+function orderedSelectedRefs() {
+  return matters
+    .map((m) => m.reference)
+    .filter((ref) => selectedRefs.has(ref));
+}
+
+// Toggle a single row's selection.
+tbody.addEventListener('change', (e) => {
+  const cb = e.target.closest('.row-check');
+  if (!cb) return;
+  const row = cb.closest('tr');
+  if (!row) return;
+  const ref = row.dataset.ref;
+  if (cb.checked) selectedRefs.add(ref);
+  else selectedRefs.delete(ref);
+  updateSelectionUI();
+});
+
+// Select-all toggles every currently visible row.
+if (checkAll) {
+  checkAll.addEventListener('change', () => {
+    tbody.querySelectorAll('.row-check').forEach((cb) => {
+      cb.checked = checkAll.checked;
+      const ref = cb.closest('tr').dataset.ref;
+      if (checkAll.checked) selectedRefs.add(ref);
+      else selectedRefs.delete(ref);
+    });
+    updateSelectionUI();
+  });
+}
+
+// Clear the selection.
+if (selectClearBtn) {
+  selectClearBtn.addEventListener('click', () => {
+    selectedRefs.clear();
+    tbody.querySelectorAll('.row-check').forEach((cb) => (cb.checked = false));
+    updateSelectionUI();
+  });
+}
+
+// Open every selected matter as a tab, then navigate to the first.
+if (selectViewAllBtn) {
+  selectViewAllBtn.addEventListener('click', () => {
+    const refs = orderedSelectedRefs();
+    if (!refs.length) return;
+    const matterFor = (ref) => matters.find((m) => m.reference === ref);
+    refs.forEach((ref) => {
+      const m = matterFor(ref);
+      window.HaloTabs.addMatterTab({ ref, title: m ? m.description : '' });
+    });
+    const first = matterFor(refs[0]);
+    window.HaloTabs.openMatterTab({ ref: refs[0], title: first ? first.description : '' });
+  });
+}
 
 // ---------- Init ----------
 syncSearchClear();
