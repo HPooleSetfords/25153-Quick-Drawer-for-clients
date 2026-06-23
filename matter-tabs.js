@@ -25,21 +25,8 @@
     }
   }
 
-  // A "solo" window (opened via "Open in new window") shows only its own
-  // matter — it never reads or writes the shared tab strip, so opening several
-  // matters at once gives several independent single-matter windows instead of
-  // one window with every matter as a tab.
-  function isSolo() {
-    return new URLSearchParams(location.search).has('solo');
-  }
-
   // ---------- Persistence ----------
   function loadTabs() {
-    if (isSolo()) {
-      const p = new URLSearchParams(location.search);
-      const ref = p.get('ref');
-      return ref ? [{ ref, title: p.get('title') || '' }] : [];
-    }
     try {
       const arr = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
       return Array.isArray(arr) ? arr.filter((t) => t && t.ref) : [];
@@ -48,7 +35,6 @@
     }
   }
   function saveTabs(tabs) {
-    if (isSolo()) return; // never touch the shared strip from a solo window
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(tabs));
     } catch {
@@ -140,13 +126,16 @@
     renderFlyoutList();
   }
 
-  // Open a matter in its own separate browser window. The window is "solo":
-  // it shows only this matter and does not join the shared tab strip, so
-  // opening several matters at once produces several independent windows
-  // rather than one window with every matter as a tab.
+  // Open a matter in a separate browser window. It's registered in the shared
+  // tab strip (via localStorage) so the new window shows the same open tabs.
   // `index` cascades successive windows so they don't all stack in one spot.
   function openMatterWindow(matter, index) {
     if (!matter || !matter.ref) return;
+    const tabs = loadTabs();
+    if (!tabs.some((t) => t.ref === matter.ref)) {
+      tabs.push({ ref: matter.ref, title: matter.title || '' });
+      saveTabs(tabs);
+    }
     // Chrome only opens a genuine separate window (not a new tab) when the
     // features string includes a size — so pass width/height (and position it).
     const i = index || 0;
@@ -158,8 +147,7 @@
     const left = Math.max(0, baseLeft + offset);
     const top = Math.max(0, baseTop + offset);
     const features = `noopener,popup=yes,width=${Math.round(w)},height=${Math.round(h)},left=${Math.round(left)},top=${Math.round(top)}`;
-    // Unique window name + solo flag so each matter opens its own window.
-    window.open(matterHref(matter.ref, matter.title) + '&solo=1', 'matter_' + matter.ref, features);
+    window.open(matterHref(matter.ref, matter.title), 'matter_' + matter.ref, features);
   }
 
   function closeTab(ref) {
