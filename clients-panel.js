@@ -90,12 +90,31 @@
     return escapeHtml(str).replace(/"/g, '&quot;');
   }
 
+  // Search matches the client (name / type / id) or any of its matters
+  // (ref / description / type / status), so users can find a client by what
+  // they remember about its matters.
+  function matterMatches(m, q) {
+    return (
+      (m.ref || '').toLowerCase().includes(q) ||
+      (m.description || '').toLowerCase().includes(q) ||
+      (m.type || '').toLowerCase().includes(q) ||
+      (m.status || '').toLowerCase().includes(q)
+    );
+  }
+  function clientTextMatches(c, q) {
+    return (
+      c.name.toLowerCase().includes(q) ||
+      (c.type || '').toLowerCase().includes(q) ||
+      (c.id || '').toLowerCase().includes(q)
+    );
+  }
+
   function getVisible() {
     const q = term.trim().toLowerCase();
     return clients.filter((c) => {
       if (activeSegment === 'mine' && !c.mine) return false;
       if (activeSegment === 'archived' && !c.archived) return false;
-      if (q && !c.name.toLowerCase().includes(q)) return false;
+      if (q && !clientTextMatches(c, q) && !c.matters.some((m) => matterMatches(m, q))) return false;
       return true;
     });
   }
@@ -111,6 +130,7 @@
 
   function renderList() {
     const visible = getVisible();
+    const q = term.trim().toLowerCase();
     const noun = activeSegment === 'archived' ? 'archived' : 'active';
     countEl.textContent = `${visible.length} ${noun} client${visible.length === 1 ? '' : 's'}`;
 
@@ -132,8 +152,14 @@
 
       // Multiple matters — render an expandable accordion.
       if (c.matters.length > 1) {
-        const isOpen = expanded.has(c.name);
-        const rows = c.matters.map((m) => `
+        // When searching, show only the matters that matched (unless the
+        // client itself matched by name/type/id) and auto-expand so the user
+        // sees why this client surfaced.
+        const hits = q ? c.matters.filter((m) => matterMatches(m, q)) : [];
+        const showMatched = q && hits.length && !clientTextMatches(c, q);
+        const shown = showMatched ? hits : c.matters;
+        const isOpen = expanded.has(c.name) || (q && hits.length > 0);
+        const rows = shown.map((m) => `
           <button class="client-matter" type="button" role="listitem"
                   data-ref="${escapeAttr(m.ref)}" data-title="${escapeAttr(m.description)}">
             <span class="client-matter__body">

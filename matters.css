@@ -2227,15 +2227,38 @@ textarea.field__control {
   gap: 4px;
 }
 
+/* Line 1: reference + description side by side. */
+.mt-result__top {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  min-width: 0;
+}
+
 .mt-result__ref {
-  font-size: 16px;
-  line-height: 24px;
-  color: var(--text-primary);
+  flex-shrink: 0;
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 400;
+  color: var(--brand);
 }
 
 .mt-result__desc {
+  flex: 1 1 auto;
+  min-width: 0;
   font-size: 14px;
   line-height: 20px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Line 2: the client linked to the matter. */
+.mt-result__client {
+  font-size: 13px;
+  line-height: 18px;
   color: var(--text-secondary);
   white-space: nowrap;
   overflow: hidden;

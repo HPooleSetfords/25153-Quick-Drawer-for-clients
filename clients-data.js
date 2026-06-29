@@ -51,6 +51,6 @@
     // panel behaviour: 1 matter → open it directly, >1 → expand an accordion.
     matters: matters
       .filter((m) => (m.client || '').trim() === name)
-      .map((m) => ({ ref: m.reference, description: m.description, status: m.status })),
+      .map((m) => ({ ref: m.reference, description: m.description, status: m.status, type: m.type })),
   }));
 })();

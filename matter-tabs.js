@@ -231,6 +231,13 @@
       scrollActiveIntoView();
       updateNav();
     }
+
+    // If the picker is open, keep it anchored to the + button, which has just
+    // moved now that a tab was added/removed.
+    if (flyoutOpen()) {
+      const addBtn = currentAddBtn();
+      if (addBtn) positionFlyout(addBtn);
+    }
   }
 
   // ---------- Scroll navigation ----------
@@ -317,7 +324,11 @@
       if (!term) return true;
       return (
         (m.reference || '').toLowerCase().includes(term) ||
-        (m.description || '').toLowerCase().includes(term)
+        (m.description || '').toLowerCase().includes(term) ||
+        (m.type || '').toLowerCase().includes(term) ||
+        (m.client || '').toLowerCase().includes(term) ||
+        (m.status || '').toLowerCase().includes(term) ||
+        (m.feeEarner || '').toLowerCase().includes(term)
       );
     });
   }
@@ -389,14 +400,27 @@
           `<button class="mt-result" type="button" role="option" aria-selected="${inTabs}"` +
           ` data-ref="${escapeAttr(m.reference)}" data-title="${escapeAttr(m.description)}">` +
           `<span class="mt-result__text">` +
+          `<span class="mt-result__top">` +
           `<span class="mt-result__ref">${escapeHtml(m.reference)}</span>` +
           `<span class="mt-result__desc">${escapeHtml(m.description)}</span>` +
+          `</span>` +
+          `<span class="mt-result__client">${escapeHtml(m.client || '')}</span>` +
           `</span>` +
           `<span class="mt-result__icon">${inTabs ? iconCheck : iconPlus}</span>` +
           `</button>`
         );
       })
       .join('');
+  }
+
+  // The visible + button — the inline one inside the strip, or the outer one
+  // shown when the strip overflows.
+  function currentAddBtn() {
+    const root = document.getElementById('matter-tabs');
+    if (!root) return null;
+    const outer = root.querySelector('.mt-add--outer');
+    if (outer && !outer.hidden) return outer;
+    return root.querySelector('.mt-add--inline');
   }
 
   function positionFlyout(addBtn) {
@@ -429,12 +453,27 @@
   }
 
   // ---------- Hover tooltip ----------
-  // Figma: 2798-44882. After a short hover on a non-active tab, show a flyout
-  // with the matter's ref, status, client and full description.
-  const TIP_DELAY = 500;
+  // Figma: 2798-44882. After a hover on a non-active tab, show a flyout with
+  // the matter's ref, status, client and full description.
+  //
+  // Warm-up behaviour: the first tooltip takes 3s to appear. Once one has
+  // shown, the strip is "warm" and subsequent tooltips appear after 0.5s. If
+  // the user stops hovering tabs for 3s, it cools back down to the 3s delay.
+  const TIP_DELAY_COLD = 3000;
+  const TIP_DELAY_WARM = 500;
   let tip = null;
   let tipTimer = null;
   let hoverTab = null;
+  let tipWarm = false;
+  let tipCooldownTimer = null;
+
+  function startTipCooldown() {
+    if (tipCooldownTimer) clearTimeout(tipCooldownTimer);
+    tipCooldownTimer = setTimeout(() => {
+      tipWarm = false;
+      tipCooldownTimer = null;
+    }, TIP_DELAY_COLD);
+  }
 
   function lookupMatter(ref) {
     const list = Array.isArray(window.HALO_MATTERS) ? window.HALO_MATTERS : [];
@@ -472,6 +511,8 @@
       `</div>`;
 
     tip.hidden = false;
+    // A tooltip has now shown — the strip is "warm", so the next ones are quick.
+    tipWarm = true;
     // Position below the tab, left-aligned, clamped to the viewport.
     const rect = tab.getBoundingClientRect();
     const width = tip.offsetWidth;
@@ -538,13 +579,17 @@
         if (hoverTab) {
           hoverTab = null;
           hideTip();
+          startTipCooldown();
         }
         return;
       }
       if (tab === hoverTab) return; // already tracking this tab
+      // A fresh hover within the cooldown window keeps the strip warm.
+      if (tipCooldownTimer) { clearTimeout(tipCooldownTimer); tipCooldownTimer = null; }
       hoverTab = tab;
       hideTip(); // cancel any pending/shown tip for the previous tab
-      tipTimer = setTimeout(() => showTip(tab), TIP_DELAY);
+      const delay = tipWarm ? TIP_DELAY_WARM : TIP_DELAY_COLD;
+      tipTimer = setTimeout(() => showTip(tab), delay);
     });
     root.addEventListener('mouseout', (e) => {
       const tab = e.target.closest('.mt-tab');
@@ -553,6 +598,8 @@
       if (e.relatedTarget && tab.contains(e.relatedTarget)) return;
       if (hoverTab === tab) hoverTab = null;
       hideTip();
+      // Start the cool-down: 3s without hovering a tab resets to the long delay.
+      startTipCooldown();
     });
 
     // Re-evaluate chevron visibility when the bar width changes.
