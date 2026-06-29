@@ -18,9 +18,12 @@
     '<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>';
   const iconClear =
     '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>';
-  // Right-pointing chevron — shown on hover for clients with a single matter.
-  const iconChevronRight =
-    '<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>';
+  // Tab icon (Material Symbols "tab"): outline when the matter isn't open
+  // (shown on hover), filled once it's open in a tab (shown persistently).
+  const iconTabOutline =
+    '<svg viewBox="0 -960 960 960" width="24" height="24" fill="currentColor"><path d="M160-240h640v-320H520v-160H160v480Zm0 80q-33 0-56.5-23.5T80-240v-480q0-33 23.5-56.5T160-800h640q33 0 56.5 23.5T880-720v480q0 33-23.5 56.5T800-160H160Zm0-80v-480 480Z"/></svg>';
+  const iconTabFilled =
+    '<svg viewBox="0 -960 960 960" width="24" height="24" fill="currentColor" fill-rule="evenodd"><path d="M160-160q-33 0-56.5-23.5T80-240v-480q0-33 23.5-56.5T160-800h640q33 0 56.5 23.5T880-720v480q0 33-23.5 56.5T800-160H160ZM520-560h280v-160H520Z"/></svg>';
   // Down chevron — accordion indicator for clients with multiple matters.
   const iconChevronDown =
     '<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>';
@@ -128,8 +131,28 @@
     });
   }
 
+  // Refs of matters currently open in the tab strip (shared via localStorage),
+  // so we can show those with the filled tab icon.
+  function openMatterRefs() {
+    try {
+      const arr = JSON.parse(localStorage.getItem('halo:openMatterTabs') || '[]');
+      return new Set(Array.isArray(arr) ? arr.map((t) => t && t.ref).filter(Boolean) : []);
+    } catch (e) {
+      return new Set();
+    }
+  }
+
+  // Outline tab icon on hover by default; filled + persistent once the matter
+  // is open in a tab.
+  function tabIcon(isOpen) {
+    return isOpen
+      ? `<span class="client-tabicon client-tabicon--open" aria-hidden="true">${iconTabFilled}</span>`
+      : `<span class="client-tabicon client-tabicon--add" aria-hidden="true">${iconTabOutline}</span>`;
+  }
+
   function renderList() {
     const visible = getVisible();
+    const openRefs = openMatterRefs();
     const q = term.trim().toLowerCase();
     const noun = activeSegment === 'archived' ? 'archived' : 'active';
     countEl.textContent = `${visible.length} ${noun} client${visible.length === 1 ? '' : 's'}`;
@@ -169,7 +192,7 @@
               </span>
               <span class="client-matter__desc" title="${escapeAttr(m.description)}">${escapeHtml(m.description)}</span>
             </span>
-            <span class="client-matter__icon" aria-hidden="true">${iconChevronRight}</span>
+            ${tabIcon(openRefs.has(m.ref))}
           </button>
         `).join('');
         return `
@@ -195,7 +218,7 @@
         <button class="client-item client-item--single" type="button" role="listitem"
                 data-ref="${escapeAttr(m.ref || '')}" data-title="${escapeAttr(m.description || '')}">
           ${text}
-          <span class="client-item__icon client-item__icon--hover" aria-hidden="true">${iconChevronRight}</span>
+          ${tabIcon(openRefs.has(m.ref))}
         </button>
       `;
     }).join('');
@@ -408,6 +431,15 @@
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeCtxMenu(); });
   window.addEventListener('resize', closeCtxMenu);
   window.addEventListener('scroll', closeCtxMenu, true);
+
+  // When tabs are opened or closed (here, the tab strip, or another window),
+  // re-render so the open/closed tab icons update. Preserve scroll so the list
+  // doesn't jump.
+  document.addEventListener('halo:tabs-changed', () => {
+    const y = listEl.scrollTop;
+    renderList();
+    listEl.scrollTop = y;
+  });
 
   render();
 })();

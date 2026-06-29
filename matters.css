@@ -2074,6 +2074,9 @@ textarea.field__control {
   background: var(--surface-primary);
   /* shadow/lg */
   box-shadow: 0 4px 6px -2px rgba(0, 0, 0, 0.05), 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  /* Glide to the + button's new spot when a tab is added/removed. The initial
+     open is made instant in JS (transition suppressed for that frame). */
+  transition: left 0.18s ease, top 0.18s ease;
 }
 
 .mt-flyout[hidden] {
@@ -2269,6 +2272,16 @@ textarea.field__control {
   flex-shrink: 0;
   display: inline-flex;
   color: var(--brand);
+}
+
+/* The "add to tabs" (outline) icon only appears on hover; the "open" (filled)
+   icon stays visible so you can see which matters are already open. */
+.mt-result__icon--add {
+  visibility: hidden;
+}
+
+.mt-result:hover .mt-result__icon--add {
+  visibility: visible;
 }
 
 .mt-flyout__empty {
@@ -2763,6 +2776,27 @@ textarea.field__control {
   width: 24px;
   height: 24px;
   color: var(--brand);
+}
+
+/* Tab icon on client rows / matter rows. The outline ("add") icon is only
+   shown on hover; the filled ("open") icon stays visible. Space is always
+   reserved (visibility, not display) so rows don't shift on hover. */
+.client-tabicon {
+  display: flex;
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  color: var(--brand);
+  visibility: hidden;
+}
+
+.client-tabicon--open {
+  visibility: visible;
+}
+
+.client-item:hover .client-tabicon--add,
+.client-matter:hover .client-tabicon--add {
+  visibility: visible;
 }
 
 /* "View all matters" action at the foot of an expanded accordion. */

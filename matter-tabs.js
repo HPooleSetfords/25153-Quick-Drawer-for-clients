@@ -40,6 +40,13 @@
     } catch {
       /* storage unavailable — strip just won't persist */
     }
+    // Tell other UI (clients drawer, open-matter picker) to refresh their
+    // open/closed tab icons.
+    try {
+      document.dispatchEvent(new CustomEvent('halo:tabs-changed'));
+    } catch (e) {
+      /* CustomEvent unsupported — icons just won't live-update */
+    }
   }
 
   // ---------- Helpers ----------
@@ -78,10 +85,12 @@
     '<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>';
   const iconFilter =
     '<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>';
-  const iconCheck =
-    '<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
-  const iconPlus =
-    '<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>';
+  // Tab icon (Material Symbols "tab"): outline when the matter isn't open,
+  // filled (notch cut out via evenodd) once it's open in a tab.
+  const iconTabOutline =
+    '<svg viewBox="0 -960 960 960" width="24" height="24" fill="currentColor"><path d="M160-240h640v-320H520v-160H160v480Zm0 80q-33 0-56.5-23.5T80-240v-480q0-33 23.5-56.5T160-800h640q33 0 56.5 23.5T880-720v480q0 33-23.5 56.5T800-160H160Zm0-80v-480 480Z"/></svg>';
+  const iconTabFilled =
+    '<svg viewBox="0 -960 960 960" width="24" height="24" fill="currentColor" fill-rule="evenodd"><path d="M160-160q-33 0-56.5-23.5T80-240v-480q0-33 23.5-56.5T160-800h640q33 0 56.5 23.5T880-720v480q0 33-23.5 56.5T800-160H160ZM520-560h280v-160H520Z"/></svg>';
 
   // Status filters offered by the flyout's segmented control.
   const FLYOUT_FILTERS = ['All', 'Open', 'Favourite', 'Recent', 'Closing', 'Closed', 'Reopening'];
@@ -406,7 +415,7 @@
           `</span>` +
           `<span class="mt-result__client">${escapeHtml(m.client || '')}</span>` +
           `</span>` +
-          `<span class="mt-result__icon">${inTabs ? iconCheck : iconPlus}</span>` +
+          `<span class="mt-result__icon ${inTabs ? 'mt-result__icon--open' : 'mt-result__icon--add'}">${inTabs ? iconTabFilled : iconTabOutline}</span>` +
           `</button>`
         );
       })
@@ -439,8 +448,13 @@
     const input = flyout.querySelector('.mt-flyout__search-input');
     if (input) input.value = '';
     renderFlyoutList();
+    // Place it instantly on open (suppress the transition for this frame) so it
+    // doesn't slide in from wherever it last sat; later moves animate.
+    flyout.style.transition = 'none';
     flyout.hidden = false;
     positionFlyout(addBtn);
+    void flyout.offsetWidth; // force reflow so the jump isn't animated
+    flyout.style.transition = '';
     if (input) input.focus();
   }
 
@@ -615,6 +629,11 @@
     window.addEventListener('resize', () => {
       closeFlyout();
       hideTip();
+    });
+
+    // Keep the open picker's icons in sync when tabs are added/closed elsewhere.
+    document.addEventListener('halo:tabs-changed', () => {
+      if (flyoutOpen()) renderFlyoutList();
     });
   }
 
